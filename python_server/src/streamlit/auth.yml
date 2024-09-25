@@ -1,0 +1,15 @@
+credentials:
+  usernames:
+    tkhrann2045:
+      email: takahiroanno2024@gmail.com
+      failed_login_attempts: 0 # Will be managed automatically
+      logged_in: False # Will be managed automatically
+      name: Takahiro Anno
+      password: Jd9Dp5Ly # Will be hashed automatically
+cookie:
+  expiry_days: 30
+  key: some_signature_key # Must be string
+  name: some_cookie_name
+pre-authorized:
+  emails:
+  - tkhroanno@gmail.com

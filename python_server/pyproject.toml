@@ -1,0 +1,202 @@
+[tool.poetry]
+name = "AItuber"
+version = "0.0.1"
+description = ""
+authors = ["ina299 <kainekominto299@gmail.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+requests = "^2.32.3"
+flask = "^3.0.3"
+google-api-python-client = "^2.133.0"
+pandas = "^2.2.2"
+openai = "^1.33.0"
+langchain = "^0.2.5"
+pdf2image = "^1.17.0"
+jaconv = "^0.3.4"
+faiss-cpu = "^1.8.0"
+langchain-openai = "^0.1.8"
+langchain-community = "^0.2.4"
+pytest = "^8.2.2"
+ruff = "^0.4.9"
+fastapi = "^0.111.0"
+uvicorn = "^0.30.1"
+orjson = "^3.10.5"
+elevenlabs = "^1.3.0"
+numpy = "^1.26.4"
+pydantic-settings = "^2.3.3"
+click = "^8.1.7"
+janome = "^0.5.0"
+pytest-asyncio = "^0.23.7"
+typing-extensions = "^4.12.2"
+azure-cognitiveservices-speech = "^1.38.0"
+pypdf2 = "^3.0.1"
+regex = "^2024.5.15"
+mecab-python3 = "^1.0.9"
+unidic-lite = "^1.0.8"
+rank-bm25 = "^0.2.2"
+python-dotenv = "^1.0.1"
+sqlalchemy = "^2.0.31"
+alembic = "^1.13.1"
+psycopg = {extras = ["binary"], version = "^3.1.19"}
+neologdn = "^0.5.3"
+tenacity = "^8.4.1"
+structlog = "^24.2.0"
+google-auth = "^2.30.0"
+langchain-google-genai = "^1.0.10"
+google-generativeai = "^0.7.2"
+
+[tool.poetry.group.dev.dependencies]
+scikit-learn = "^1.5.0"
+
+[tool.poetry.group.streamlit.dependencies]
+streamlit = "^1.35.0"
+streamlit-authenticator = "^0.3.2"
+gspread = "^6.1.2"
+
+[tool.ruff]
+line-length = 190
+target-version = "py312"
+
+[tool.ruff.lint]
+
+select = [
+  # pyflakes
+  "F",
+  # pycodestyle
+  "E",
+  # pycodestyle
+  "W",
+  # isort
+  "I",
+  # pydocstyle
+  "D",
+  # pyupgrade
+  "UP",
+  # flake8-2020
+  "YTT",
+  # pydocstyle
+  "ASYNC",
+  # flake8-bandit
+  "S",
+  # flake8-bugbear
+  "B",
+  # flake8-commas
+  "COM",
+  # flake8-comprehensions
+  "C4",
+  # falke8-datetimez
+  "DTZ",
+  # flake8-debugger
+  "T10",
+  # flake8-executable
+  "EXE",
+  # flake8-implicit-str-concat
+  "ISC",
+  # flake8-import-conventions
+  "ICN",
+  # flake8-logging-format
+  "G010",
+  # flake8-print
+  "T20",
+  # flake8-pie
+  "PIE",
+  # flake8-raise
+  "RSE",
+  # flake8-slots
+  "SLOT",
+  # flake8-gettext
+  "INT",
+  # pandas-vet
+  "PD",
+  # Pylint
+  "PL",
+  # NumPy-specific rules
+  "NPY",
+  # flake8-pytest-style
+  "PT",
+]
+
+ignore = [
+  # Missing docstring in public module
+  "D100",
+  # Missing docstring in public package
+  "D104",
+  # Missing docstring in magic method
+  "D105",
+  # Missing docstring in __init__
+  "D107",
+  # First line should be in imperative mood
+  "D400",
+  # First line should end with a period
+  "D401",
+  # line break before binary operator
+  "D403",
+  # Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.
+  "S101",
+  # Double quotes found but single quotes preferred
+  "Q000",
+  # https://www.pydocstyle.org/en/5.0.1/error_codes.html#default-conventions
+  # for pep257 only (ignore numpy & google)
+  "D203",
+  "D212",
+  "D213",
+  "D214",
+  "D215",
+  "D404",
+  "D405",
+  "D406",
+  "D407",
+  "D408",
+  "D409",
+  "D410",
+  "D411",
+  "D413",
+  "D415",
+  "D416",
+  "D417",
+
+  "B008",
+
+  # too-many-return-statements, 可読性との兼ね合い。そのうち対応しても良いのかも？
+  "PLR0911",
+  # too-many-branches, 可読性との兼ね合い。そのうち対応しても良いのかも？
+  "PLR0912",
+  # too-many-arguments, kwargs を必須にしているのでそこまで気にならない。
+  "PLR0913",
+  # too-many-statements
+  "PLR0915",
+  # magic-value-comparison, テストで大量に使ってて修正がキツイ
+  "PLR2004",
+  # collapsible-else-if, 可読性との兼ね合い。そのうち対応しても良いのかも？
+  "PLR5501",
+  # invalid-all-object, そのうち対応しても良いのかも？
+  "PLE0604",
+  # cached-instance-method, やったほうが良いと思うが変更箇所が多かったので一旦スルー
+  "B019",
+  # Wrong name(s) type in `@pytest.mark.parametrize`, expected `tuple`
+  "PT006",
+  # Wrong values type in `@pytest.mark.parametrize` expected `list` of `tuple`
+  "PT007",
+  # `pytest.raises(ValueError)` is too broad, set the `match` parameter or use a more specific exception
+  # 直したい
+  "PT011",
+  # Duplicate of test case at index 3 in `@pytest_mark.parametrize`
+  # テストがバグってる、直したい
+  "PT014",
+  # print (T201)
+  "T201",
+
+  # formatetr として使用する際に競合する
+  # https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+  "ISC001",
+  "COM812",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D100","D101","D102","D103","D104","D105","D106","E501","S106"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

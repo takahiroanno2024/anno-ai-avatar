@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "telephony-app"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+pyngrok = "^7.1.6"
+python-dotenv = "^1.0.1"
+azure-cognitiveservices-speech = "^1.38.0"
+vocode = "0.1.113"
+jaconv = "0.3.4"
+janome = "0.5.0"
+together = "^1.2.9"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

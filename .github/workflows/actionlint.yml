@@ -1,0 +1,20 @@
+name: actionlint
+
+on:
+  pull_request:
+    paths:
+      - '.github/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: reviewdog/action-actionlint@v1
+        with:
+          fail_on_error: true

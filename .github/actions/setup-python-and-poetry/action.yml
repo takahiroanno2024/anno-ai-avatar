@@ -1,0 +1,54 @@
+name: SetUp Python & Poetry
+description: "Set up Python and Poetry"
+
+inputs:
+  python-version:
+    # https://github.com/python/cpython/tags
+    required: true
+    default: 3.12.4
+  poetry-version:
+    # https://github.com/python-poetry/poetry/tags
+    required: true
+    default: 1.8.3
+  working-directory:
+    required: false
+    default: "."
+
+outputs:
+  python-version:
+    value: ${{ inputs.python-version }}
+  poetry-version:
+    value: ${{ inputs.poetry-version }}
+  working-directory:
+    value: ${{ inputs.working-directory }}
+
+runs:
+  using: composite
+  steps:
+    - name: Cache Poetry
+      uses: actions/cache@v4
+      id: poetry-cache
+      with:
+        path: ~/.local
+        key: poetry-${{ inputs.cache-key-prefix }}${{ runner.os }}-${{ inputs.python-version }}-${{ inputs.poetry-version }}
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1.3.4
+      with:
+        version: ${{ inputs.poetry-version }}
+        virtualenvs-create: true
+        virtualenvs-in-project: false
+        virtualenvs-path: ~/.virtualenvs
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: "poetry"
+        cache-dependency-path: ${{ inputs.working-directory }}/poetry.lock
+
+    - name: Install Dependencies
+      shell: bash
+      run: |
+        cd ${{ inputs.working-directory }}
+        poetry install

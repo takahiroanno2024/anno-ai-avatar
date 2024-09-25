@@ -1,0 +1,142 @@
+name: Q&A evaluation (python_server)
+
+on:
+  push:
+    paths:
+      - "python_server/**"
+      - ".github/workflows/qa-eval.yml"
+      - ".github/actions/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DEFAULT_WORKING_DIRECTORY: python_server
+  YOUTUBE_API_KEYS: '[]'
+  GOOGLE_APPLICATION_CREDENTIALS: "/tmp"
+  GOOGLE_DRIVE_FOLDER_ID: ""
+  # PostgreSQL の情報。使用してないが Pythontic settings がコケるため設定しておく
+  PG_HOST: localhost
+  PG_PORT: 5432
+  PG_USER: postgres
+  PG_PASSWORD: password
+  PG_DATABASE: aituber_dev
+
+
+defaults:
+  run:
+    working-directory: python_server
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write # to post comments
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: setup Python & Poetry
+        uses: ./.github/actions/setup-python-and-poetry
+        with:
+          working-directory: ${{ env.DEFAULT_WORKING_DIRECTORY }}
+
+      - name: Save FAISS knowledge database
+        run: poetry run python -m src.cli.save_faiss_knowledge_db
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          YT_ID: ${{ secrets.YT_ID }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+
+      - name: Save FAISS database
+        run: poetry run python -m src.cli.save_faiss_db --for-eval
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          YT_ID: ${{ secrets.YT_ID }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+
+      - name: Run evaluation
+        run: poetry run python -m src.cli.rag_evaluation.evaluate --output-path result.md
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          YT_ID: ${{ secrets.YT_ID }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+
+      - name: Run evaluation with cosine-similarity-based document retrieval
+        run: poetry run python -m src.cli.rag_evaluation.evaluate --output-path result_cos_sim.md --doc-retrieval-type cosine
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          YT_ID: ${{ secrets.YT_ID }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+
+      - name: Show contents in result.md
+        run: cat result.md
+
+      - name: Post a message to Pull Request threads
+        uses: actions/github-script@v7
+        env:
+          RESULT_MD: result.md
+          RESULT_COSINE: result_cos_sim.md
+        with:
+          script: |
+            process.chdir(process.env.DEFAULT_WORKING_DIRECTORY);
+
+            const fs = require("fs");
+            const resultDefault = fs.readFileSync(process.env.RESULT_MD, "utf8");
+            const resultCosSim = fs.readFileSync(process.env.RESULT_COSINE, "utf8");
+
+            let commentBody = ""
+            commentBody += "### Evaluation results with the default document retrieval type\n\n"
+            commentBody += resultDefault
+            commentBody += "\n\n"
+            commentBody += "### Evaluation results with the cosine-similarity-based document retrieval\n\n"
+            commentBody += "<details><summary>Click to expand</summary>\n\n"
+            commentBody += resultCosSim
+            commentBody += "</details>"
+
+            async function getTargetPullRequests() {
+              if (context.eventName === "pull_request") {
+                return [context.payload.pull_request];
+              }
+              if (context.eventName === "push") {
+                const pullRequests = (
+                  await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    commit_sha: context.sha,
+                  })
+                ).data;
+                const openPullRequests = pullRequests.filter(pr => pr.state === "open")
+                return openPullRequests;
+              }
+              throw new Error(`Unsupported event type: ${context.eventName}`);
+            }
+            const targetPullRequests = await getTargetPullRequests();
+
+            core.startGroup('Found PRs:')
+            console.log(targetPullRequests)
+            core.endGroup()
+
+            for (const pr of targetPullRequests) {
+              const title = `## Eval results on [\`${context.sha.slice(0, 7)}\`](${pr.html_url}/commits/${context.sha})\n\n`;
+              const commentText = title + commentBody;
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: commentText,
+              });
+              core.info(`Created comment on PR #${pr.number}`);
+            }

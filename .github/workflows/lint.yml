@@ -1,0 +1,53 @@
+name: Lint (python_server)
+
+on:
+  push:
+    paths:
+      - 'python_server/**'
+      - '.github/workflows/lint.yml'
+      - '.github/actions/**'
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DEFAULT_WORKING_DIRECTORY: python_server
+
+defaults:
+  run:
+    working-directory: python_server
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: setup Python & Poetry
+        uses: ./.github/actions/setup-python-and-poetry
+        with:
+          working-directory: ${{ env.DEFAULT_WORKING_DIRECTORY }}
+
+      - name: Run Lint
+        run: make lint
+
+  check-fmt-diff:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: setup Python & Poetry
+        uses: ./.github/actions/setup-python-and-poetry
+        with:
+          working-directory: ${{ env.DEFAULT_WORKING_DIRECTORY }}
+
+      - name: Test if all files are correctly formatted
+        run: |
+          make fmt
+          git --no-pager diff HEAD
+          git status
+          test -z "$(git status --porcelain)"
