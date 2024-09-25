@@ -126,3 +126,4 @@ curl -X POST http://127.0.0.1:7200/reply -d "inputtext=こんにちは" -H "Cont
 * stopwords  
 一部、下記リンク先を参考にして作成
 https://github.com/MosasoM/inappropriate-words-ja
+
