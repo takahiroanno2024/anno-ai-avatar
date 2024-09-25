@@ -1,4 +1,18 @@
-# AITuber
+# anno-ai-avatar
+## アプリケーションの概要
+* 事前に考え方を学習させておくことで、YouTube Liveおよび電話にて、バーチャルアバターや特定の人物の声を通じて、視聴者・通話者からの質問に応答できるアプリケーションです
+* 2024年東京都知事選で「[AIあんの](https://note.com/jujunjun110/n/n0362b324831f)」として公開していたシステムを、オープンソースとして公開可能な形に調整したものです
+
+## ライセンスについて
+* このプロジェクトは[GPL-3.0 license](https://github.com/takahiroanno2024/anno-ai-avatar?tab=GPL-3.0-1-ov-file)にて公開されています。
+* ただし、自治体などの組織が利用する時、調整が必要な場合には個別にご相談ください。
+* 相談する場合は takahiroanno2024@gmail.com にご連絡ください。
+
+## コントリビュートについて
+* また、プロジェクトへのコントリビュートの際には、[コントリビューターライセンス契約（CLA）](https://github.com/takahiroanno2024/anno-ai-avatar/blob/main/CLA.md)への同意が必須となります。ご了承ください。
+
+
+# 利用方法
 
 ## 前提条件
 * git-lfsがインストールされていること
