@@ -16,7 +16,6 @@
 
 ## 前提条件
 * git-lfsがインストールされていること
-  * マニフェストデック([こちらのファイル等](https://github.com/takahiroanno2024/aituber/blob/dev/python_server/PDF/%E6%9D%B1%E4%BA%AC%E9%83%BD%E7%9F%A5%E4%BA%8B%E9%81%B8%E6%8C%992024%E3%83%9E%E3%83%8B%E3%83%95%E3%82%A7%E3%82%B9%E3%83%88%E3%83%87%E3%83%83%E3%82%AF.pdf))ファイルのDLに必要
   * repoをcloneする前にgit-lfsが導入されている場合はclone時に自動的でファイルがDLされる
     * clone後にgit-lfsを導入した場合は、`git lfs pull`を実行してファイルをDL可能
 
