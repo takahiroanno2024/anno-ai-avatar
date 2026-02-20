@@ -37,12 +37,15 @@ def check_ng(text: str):
     """NGをチェックして対応する文章を出力する"""
     ng_path = settings.PYTHON_SERVER_ROOT / "Text" / "NG.csv"
     ng_df = pd.read_csv(ng_path)
-    if "核家族" in text or "中核" in text or "核心" in text:
-        return False, ""
+
+    masked = text
+    for word in ["核家族", "中核", "核心"]:
+        masked = masked.replace(word, "")
+
     for row in ng_df.to_dict(orient="records"):
         ng = row.pop("ng")
         reply = str(row.pop("reply"))
-        if ng.lower() in text.lower():
+        if ng.lower() in masked.lower():
             if reply == "nan" or not reply:
                 return True, DEFAULT_NG_MESSAGE
             else:
